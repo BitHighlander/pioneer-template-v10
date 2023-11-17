@@ -28,10 +28,10 @@ import { usePioneer } from '~/lib/context/Pioneer';
 // import OutputSelect from "lib/components/OutputSelect";
 // import BlockchainSelect from "lib/components/BlockchainSelect";
 // import WalletSelect from "lib/components/WalletSelect";
-import Balances from './components/Balances';
-import Basic from './components/Basic';
+import Balances from '~/lib/components/Balances';
+import Basic from '~/lib/components/Basic';
 // // import Pubkeys from "./components/Pubkeys";
-import Transfer from './components/Transfer';
+import Transfer from '~/lib/components/Transfer';
 // import Swap from "./components/Swap";
 
 const Home = () => {

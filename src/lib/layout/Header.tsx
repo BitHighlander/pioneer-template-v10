@@ -1,6 +1,7 @@
 import { Box, Flex } from '@chakra-ui/react';
 
 import ThemeToggle from './ThemeToggle';
+import Pioneer from '~/lib/components/Pioneer';
 
 const Header = () => {
   return (
@@ -14,6 +15,7 @@ const Header = () => {
     >
       <Box marginLeft="auto">
         <ThemeToggle />
+        <Pioneer />
       </Box>
     </Flex>
   );

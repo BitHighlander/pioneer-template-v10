@@ -28,7 +28,7 @@ const Balances = () => {
         // eslint-disable-next-line react/no-array-index-key
         <Card key={index}>
           <CardHeader>
-            <Heading size="md">{balance.asset.name}</Heading>
+            <Heading size="md">{balance.name}</Heading>
           </CardHeader>
           <CardBody>
             <Stack divider={<StackDivider />} spacing="4">
@@ -37,7 +37,7 @@ const Balances = () => {
                   Chain
                 </Heading>
                 <Text pt="2" fontSize="sm">
-                  {balance.asset.chain}
+                  {balance.symbol}
                 </Text>
               </Box>
               <Box>
@@ -45,7 +45,7 @@ const Balances = () => {
                   Amount
                 </Heading>
                 <Text pt="2" fontSize="sm">
-                  {balance.assetAmount.toString()}
+                  {balance.name}
                 </Text>
               </Box>
               {/* Add more details from the balance object as needed */}
