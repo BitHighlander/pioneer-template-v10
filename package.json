@@ -21,6 +21,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.1",
     "@coinmasters/core": "^3.0.0",
     "@coinmasters/types": "^3.0.0",
@@ -40,6 +41,7 @@
     "@pioneer-platform/pioneer-caip": "^8.1.81",
     "@pioneer-platform/pioneer-client": "^9.0.19",
     "@pioneer-platform/pioneer-coins": "^8.1.89",
+    "@pioneer-platform/types": "^3.0.1",
     "@pioneer-sdk/sdk": "^1.2.6",
     "@types/uuid": "^9.0.7",
     "framer-motion": "^10.16.4",

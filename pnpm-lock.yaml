@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@chakra-ui/icons':
+    specifier: ^2.1.1
+    version: 2.1.1(@chakra-ui/system@2.6.1)(react@18.2.0)
   '@chakra-ui/react':
     specifier: ^2.8.1
     version: 2.8.1(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.37)(framer-motion@10.16.4)(react-dom@18.2.0)(react@18.2.0)
@@ -62,6 +65,9 @@ dependencies:
   '@pioneer-platform/pioneer-coins':
     specifier: ^8.1.89
     version: 8.1.89(@types/node@20.9.0)
+  '@pioneer-platform/types':
+    specifier: ^3.0.1
+    version: 3.0.1
   '@pioneer-sdk/sdk':
     specifier: ^1.2.6
     version: >-
@@ -753,6 +759,17 @@ packages:
       react: '>=18'
     dependencies:
       '@chakra-ui/shared-utils': 2.0.5
+      '@chakra-ui/system': 2.6.1(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(react@18.2.0)
+      react: 18.2.0
+    dev: false
+
+  /@chakra-ui/icons@2.1.1(@chakra-ui/system@2.6.1)(react@18.2.0):
+    resolution: {integrity: sha512-3p30hdo4LlRZTT5CwoAJq3G9fHI0wDc0pBaMHj4SUn0yomO+RcDRlzhdXqdr5cVnzax44sqXJVnf3oQG0eI+4g==}
+    peerDependencies:
+      '@chakra-ui/system': '>=2.0.0'
+      react: '>=18'
+    dependencies:
+      '@chakra-ui/icon': 3.2.0(@chakra-ui/system@2.6.1)(react@18.2.0)
       '@chakra-ui/system': 2.6.1(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(react@18.2.0)
       react: 18.2.0
     dev: false
@@ -4273,6 +4290,10 @@ packages:
       - '@swc/core'
       - '@swc/wasm'
       - '@types/node'
+    dev: false
+
+  /@pioneer-platform/types@3.0.1:
+    resolution: {integrity: sha512-6woyXh+1AQLeLKeus3spoi5MaS6YbWFsDY4QCJZzEO+mri1UrRQssp9PjvoSStvHHpr18frFwLTwq/H/EvNGlA==}
     dev: false
 
   ? /@pioneer-sdk/sdk@1.2.6(@babel/core@7.23.2)(@coinmasters/types@3.0.0)(@cosmjs/amino@0.31.1)(@cosmjs/encoding@0.31.1)(@cosmjs/math@0.31.1)(@cosmjs/proto-signing@0.31.1)(@cosmjs/stargate@0.31.1)(@ethersproject/abi@5.7.0)(@ethersproject/abstract-signer@5.7.0)(@ethersproject/address@5.7.0)(@ethersproject/bignumber@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/contracts@5.7.0)(@ethersproject/providers@5.7.2)(@ethersproject/transactions@5.7.0)(@metamask/approval-controller@3.5.2)(@metamask/eslint-config@12.2.0)(@scure/base@1.1.3)(@scure/bip39@1.2.1)(@shapeshiftoss/caip@8.15.0)(@shapeshiftoss/logger@1.1.3)(@shapeshiftoss/types@8.6.0)(@types/node@20.9.0)(@types/react@18.2.37)(@typescript-eslint/eslint-plugin@6.2.1)(@typescript-eslint/parser@6.2.1)(bchaddrjs@0.5.2)(bitcoinjs-lib@5.2.0)(bn.js@5.2.1)(coininfo@5.2.1)(cosmjs-types@0.8.0)(crypto-js@4.1.1)(elliptic@6.5.4)(eslint-plugin-jest@27.6.0)(eslint-plugin-jsx-a11y@6.7.1)(eslint-plugin-prettier@5.0.0)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react@7.33.1)(eslint@8.53.0)(ethers@6.8.1)(react@18.2.0)(webpack@5.89.0)

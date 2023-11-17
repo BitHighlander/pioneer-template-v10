@@ -9,7 +9,7 @@ yarn-error.log*
 
 # TS
 *.tsbuildinfo
-
+.env
 # Turbo
 .turbo
 

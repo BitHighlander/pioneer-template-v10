@@ -17,5 +17,6 @@ module.exports = {
     'complexity': 'off',
     'no-underscore-dangle': 'off',
     'no-plusplus': 'off',
+    'import/order': 'off',
   },
 };
