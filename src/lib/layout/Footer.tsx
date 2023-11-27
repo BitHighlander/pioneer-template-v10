@@ -1,4 +1,5 @@
 import { Flex, Link, Text } from '@chakra-ui/react';
+import ThemeToggle from './ThemeToggle';
 
 const Footer = () => {
   return (
@@ -11,9 +12,11 @@ const Footer = () => {
     >
       <Text fontSize="xs">
         {new Date().getFullYear()} -{' '}
-        <Link href="https://sznm.dev" isExternal>
-          sznm.dev
+        <Link href="https://pioneers.dev" isExternal>
+          Pioneers.dev
         </Link>
+        <br />
+        <ThemeToggle />
       </Text>
     </Flex>
   );

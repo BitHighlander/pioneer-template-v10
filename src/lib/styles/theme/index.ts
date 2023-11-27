@@ -43,7 +43,19 @@ const colors = {
     800: '#822727',
     900: '#63171b',
   },
-  // Include other colors as needed for your theme
+  pioneerDark: {
+    // Shades of dark gray with a hint of green
+    50: '#e2e4e3',
+    100: '#c4c6c5',
+    200: '#a5a8a7',
+    300: '#868a89',
+    400: '#6a6e6d',
+    500: '#4e5251',
+    600: '#3d4140',
+    700: '#2c3030',
+    800: '#1c1f1e',
+    900: '#0c0e0d',
+  },
 };
 
 export const theme = extendTheme({
@@ -51,7 +63,7 @@ export const theme = extendTheme({
   useSystemColorMode: false,
   colors: {
     pioneerGreen: colors.pioneerGreen, // add the new color palette to the theme
-    gray: colors.pioneerGreen[100], // why this make it black?
+    gray: colors.pioneerDark, // why this make it black?
   },
   fonts: {
     heading: 'Plus Jakarta Sans, sans-serif',

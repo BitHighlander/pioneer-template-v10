@@ -257,6 +257,10 @@ export const PioneerProvider = ({
         );
         console.log('state.app.context: ', state.app.context);
         if (state && state.app) {
+          // if pioneer set in localStoage
+          if (state.app.isPioneer) {
+            localStorage.setItem('isPioneer', state.app.isPioneer);
+          }
           // @ts-ignore
           dispatch({
             type: WalletActions.SET_CONTEXT,

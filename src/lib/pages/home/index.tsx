@@ -74,7 +74,6 @@ const Home = () => {
   };
 
   const refresh = async () => {
-    // TODO why do I need to press refresh?
     console.log('2 pubkeyContext: ', pubkeyContext);
     console.log('2 balances: ', balances);
     if (pubkeyContext)

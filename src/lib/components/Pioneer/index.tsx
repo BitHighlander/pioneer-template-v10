@@ -17,6 +17,8 @@ import {
   Card,
   CardBody,
 } from '@chakra-ui/react';
+// @ts-ignore
+import pioneerImagePng from '~/lib/assets/png/pioneer.png';
 
 import { useEffect, useState } from 'react';
 import { FaCog } from 'react-icons/fa';
@@ -57,7 +59,7 @@ const getWalletSettingsContent = (walletType: string) => {
 
 const Pioneer = () => {
   const { state, connectWallet } = usePioneer();
-  const { api, app, status } = state;
+  const { api, app, status, balances } = state;
   const { onOpen } = useDisclosure();
 
   // local
@@ -108,13 +110,26 @@ const Pioneer = () => {
       if (app.wallets) {
         setWalletsAvailable(app.wallets);
       }
+      if (app.isPioneer) {
+        console.log('app.isPioneer: ', app.isPioneer);
+        setIsPioneer(true);
+        setPioneerImage(app.isPioneer);
+      }
+      const pioneerCache = localStorage.getItem('isPioneer');
+      if (pioneerCache) {
+        setIsPioneer(true);
+        setPioneerImage(pioneerCache);
+      }
+      if (balances && balances.length > 0) {
+        console.log('balances: ', balances);
+      }
     } catch (e) {
       console.error(e);
     }
   };
   useEffect(() => {
     onStart();
-  }, [app, app?.wallets]);
+  }, [app, app?.wallets, app?.isPioneer]);
 
   const settingsSelected = async function () {
     try {
@@ -171,7 +186,9 @@ const Pioneer = () => {
               {avatarContent}
             </Avatar>
           ) : (
-            <Avatar size="lg">{avatarContent}</Avatar>
+            <Avatar size="lg" src={pioneerImagePng}>
+              {avatarContent}
+            </Avatar>
           )}
         </Avatar>
       </MenuButton>

@@ -1,6 +1,5 @@
 import { Box, Flex } from '@chakra-ui/react';
 
-import ThemeToggle from './ThemeToggle';
 import Pioneer from '~/lib/components/Pioneer';
 
 const Header = () => {
@@ -14,7 +13,6 @@ const Header = () => {
       gridGap={2}
     >
       <Box marginLeft="auto">
-        <ThemeToggle />
         <Pioneer />
       </Box>
     </Flex>

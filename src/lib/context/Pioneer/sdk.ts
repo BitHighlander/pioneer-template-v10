@@ -133,6 +133,8 @@ export class SDK {
   // @ts-ignore
   public keepkeyApiKey: string;
 
+  public isPioneer: string | null;
+
   constructor(spec: string, config: PioneerSDKConfig) {
     this.status = 'preInit';
     this.spec = spec || config.spec || 'https://pioneers.dev/spec/swagger';
@@ -148,6 +150,7 @@ export class SDK {
     this.pubkeys = [];
     this.balances = [];
     this.nfts = [];
+    this.isPioneer = null;
     this.pioneer = null;
     this.swapKit = null;
     this.context = '';
@@ -207,6 +210,7 @@ export class SDK {
         // done registering, now get the user
         // this.refresh()
         if (!this.pioneer) throw Error('Failed to init pioneer server!');
+
         return this.pioneer;
       } catch (e) {
         console.error(tag, 'e: ', e);
@@ -270,6 +274,17 @@ export class SDK {
           if (!ethAddress)
             throw Error('Failed to get eth address! can not pair wallet');
           const context = `${wallet.toLowerCase()}:${ethAddress}.wallet`;
+
+          // isPioneer?
+          // get pioneer status
+          let pioneerInfo = await this.pioneer.GetPioneer({
+            address: ethAddress,
+          });
+          pioneerInfo = pioneerInfo.data;
+          console.log('pioneerInfo: ', pioneerInfo);
+          if (pioneerInfo.isPioneer) {
+            this.isPioneer = pioneerInfo.image;
+          }
           // log.info(tag, "context: ", context);
           this.events.emit('CONTEXT', context);
           // add context to wallet
