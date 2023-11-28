@@ -135,6 +135,9 @@ export class SDK {
 
   public isPioneer: string | null;
 
+  // @ts-ignore
+  public loadBalanceCache: (balances: any) => Promise<void>;
+
   constructor(spec: string, config: PioneerSDKConfig) {
     this.status = 'preInit';
     this.spec = spec || config.spec || 'https://pioneers.dev/spec/swagger';
@@ -215,6 +218,21 @@ export class SDK {
       } catch (e) {
         console.error(tag, 'e: ', e);
         throw e;
+      }
+    };
+    this.loadBalanceCache = async function (balances: any) {
+      try {
+        if (balances.length === 0) throw Error('No balances to load!');
+        this.balances = [...this.balances, ...balances];
+        this.balances.sort((a, b) => b.valueUsd - a.valueUsd);
+        console.log('SET BALANCES CALLED!!! balances: ', this.balances);
+        this.events.emit('SET_BALANCES', this.balances);
+        console.log('balance0: ', this.balances[0]);
+        this.setContext(this.balances[0].context);
+        this.setAssetContext(this.balances[0]);
+        this.setOutboundAssetContext(this.balances[1]);
+      } catch (e) {
+        console.error('Failed to load balances! e: ', e);
       }
     };
     this.pairWallet = async function (wallet: string) {
@@ -366,7 +384,7 @@ export class SDK {
             // eslint-disable-next-line @typescript-eslint/prefer-for-of,no-plusplus
             for (let j = 0; j < walletData.balance.length; j++) {
               const balance = walletData.balance[j];
-              console.log('balance: ', balance);
+              // console.log('balance: ', balance);
               if (balance && balance?.baseValueNumber > 0) {
                 balance.address = walletData.address;
                 balance.context = context;
@@ -467,35 +485,7 @@ export class SDK {
         if (isContextExist) {
           // if success
           this.context = context;
-          this.events.emit('CONTEXT', context);
-          // TODO refresh
-          // if(this.blockchainContext && this.assetContext){
-          //     //update pubkey context
-          //     let blockchain = this.blockchainContext
-          //     //get pubkey for blockchain
-          //     //log.info(tag,"this.pubkeys: ",this.pubkeys)
-          //     //log.info(tag,"blockchainContext: ",blockchain)
-          //     //log.info(tag,"blockchain: ",blockchain.name)
-          //     //log.info(tag,"context: ",context)
-          //     let pubkeysForContext = this.pubkeys.filter((item: { context: string }) => item.context === context);
-          //     //log.info(tag, "pubkeysForContext: ", pubkeysForContext);
-          //
-          //     let pubkey = pubkeysForContext.find(
-          //         (item: { blockchain: any; context: string }) => item.blockchain === blockchain.name && item.context === context
-          //     );
-          //     //log.info(tag, "pubkey: ", pubkey);
-          //
-          //     if(pubkey) {
-          //         this.pubkeyContext = pubkey
-          //         //log.info(tag,"pubkeyContext: ",this.pubkeyContext)
-          //     } else {
-          //         //log.info(tag,"pubkeys: ",this.pubkeys)
-          //         //log.info(tag,"pubkeysForContext: ",pubkeysForContext)
-          //
-          //         throw Error("unable to find ("+blockchain.name+") pubkey for context! "+context)
-          //     }
-          // }
-
+          this.events.emit('SET_CONTEXT', context);
           return { success: true };
         }
         throw Error(
@@ -509,12 +499,9 @@ export class SDK {
     this.setAssetContext = async function (asset: any) {
       const tag = `${TAG} | setAssetContext | `;
       try {
-        if (asset && this.assetContext && this.assetContext !== asset) {
-          this.assetContext = asset;
-          this.events.emit('SET_ASSET_CONTEXT', asset);
-          return { success: true };
-        }
-        return { success: false, error: `already asset context=${asset}` };
+        this.assetContext = asset;
+        this.events.emit('SET_ASSET_CONTEXT', asset);
+        return { success: true };
       } catch (e) {
         console.error(tag, 'e: ', e);
         throw e;

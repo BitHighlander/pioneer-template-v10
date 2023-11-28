@@ -388,6 +388,11 @@ export const PioneerProvider = ({
 
       walletActionsArray.forEach((action) => {
         events.on(action, (data: any) => {
+          // SET_BALANCES
+          if (action === WalletActions.SET_BALANCES) {
+            // @ts-ignore
+            localStorage.setItem('balanceCache', JSON.stringify(data));
+          }
           // @ts-ignore
           dispatch({
             type: action,
@@ -395,6 +400,12 @@ export const PioneerProvider = ({
           });
         });
       });
+
+      // balance cache
+      let balanceCache: any = localStorage.getItem('balanceCache');
+      balanceCache = balanceCache ? JSON.parse(balanceCache) : [];
+      console.log('balanceCache: ', balanceCache);
+      appInit.loadBalanceCache(balanceCache);
 
       // TODO why dis no worky
       // TODO if keepkey available always connect

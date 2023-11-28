@@ -8,6 +8,7 @@ import {
   HStack,
   IconButton,
   Menu,
+  Text,
   Image,
   MenuButton,
   MenuItem,
@@ -19,17 +20,33 @@ import {
 } from '@chakra-ui/react';
 // @ts-ignore
 import pioneerImagePng from '~/lib/assets/png/pioneer.png';
+// @ts-ignore
+import KeepKeyImagePng from '~/lib/assets/png/keepkey.png';
+// @ts-ignore
+import MetaMaskImagePng from '~/lib/assets/png/metamask.png';
+// @ts-ignore
+import KeplerImagePng from '~/lib/assets/png/keplr.png';
+// @ts-ignore
+import XDEFIImagePng from '~/lib/assets/png/XDEFI.png';
+// @ts-ignore
+import LedgerImagePng from '~/lib/assets/png/ledger.png';
+// @ts-ignore
+import wcImagePng from '~/lib/assets/svg/wc.svg';
 
 import { useEffect, useState } from 'react';
 import { FaCog } from 'react-icons/fa';
-
+import MiddleEllipsis from '~/lib/components/MiddleEllipsis';
 import { usePioneer } from '~/lib/context/Pioneer';
 
 const getWalletBadgeContent = (walletType: string) => {
   const icons: any = {
-    metamask: '',
-    keepkey: '',
-    native: '',
+    metamask: MetaMaskImagePng,
+    keepkey: KeepKeyImagePng,
+    native: pioneerImagePng,
+    keplr: KeplerImagePng,
+    xdefi: XDEFIImagePng,
+    ledger: LedgerImagePng,
+    wc: wcImagePng,
   };
 
   const icon = icons[walletType];
@@ -43,9 +60,13 @@ const getWalletBadgeContent = (walletType: string) => {
 
 const getWalletSettingsContent = (walletType: string) => {
   const icons: any = {
-    metamask: '',
-    keepkey: '',
-    native: '',
+    metamask: MetaMaskImagePng,
+    keepkey: KeepKeyImagePng,
+    native: pioneerImagePng,
+    keplr: KeplerImagePng,
+    xdefi: XDEFIImagePng,
+    ledger: LedgerImagePng,
+    wc: wcImagePng,
   };
 
   const icon = icons[walletType];
@@ -59,8 +80,9 @@ const getWalletSettingsContent = (walletType: string) => {
 
 const Pioneer = () => {
   const { state, connectWallet } = usePioneer();
-  const { api, app, status, balances } = state;
+  const { api, app, status, balances, context } = state;
   const { onOpen } = useDisclosure();
+  const [showAllWallets, setShowAllWallets] = useState(false);
 
   // local
   const [walletsAvailable, setWalletsAvailable] = useState([]);
@@ -68,27 +90,47 @@ const Pioneer = () => {
   const [pioneerImage, setPioneerImage] = useState('');
   // const [context, setContext] = useState('');
   const [isPioneer, setIsPioneer] = useState(false);
+  const [isSwitchingWallet, setIsSwitchingWallet] = useState(false);
 
-  const handleWalletClick = (wallet: {
+  // Function to toggle the visibility of all wallets
+  const toggleShowAllWallets = () => {
+    setShowAllWallets(!showAllWallets);
+  };
+
+  // useEffect(() => {
+  //   if (app.assetContext) {
+  //     console.log(app.assetContext);
+  //   }
+  // }, [app, app?.assetContext]);
+
+  useEffect(() => {
+    if (context && app.isPioneer) {
+      setPioneerImage(app.isPioneer);
+    }
+  }, [context, app, app?.isPioneer]);
+
+  const handleWalletClick = async (wallet: {
     type: any;
     icon?: string | undefined;
     isConnected?: any;
   }) => {
-    setPioneerImage('');
+    setIsSwitchingWallet(true);
+    // setPioneerImage('');
     setWalletType('KEEPKEY');
     setIsPioneer(true);
     console.log('Clicked wallet:', wallet.type);
-    connectWallet(wallet.type);
-    // Here you can use the 'connectMethodName' to handle specific click actions
-    // For example: if (wallet.wallet.connectMethodName === 'connectKeepKey') { ... }
+    await connectWallet(wallet.type);
+    setIsSwitchingWallet(false);
   };
 
   const renderWallets = () => {
-    // setContext('test');
-    console.log('rendering wallets!');
-    console.log('rendering wallets!', app?.wallets);
-    return walletsAvailable.map((wallet: any) => (
-      <Card align="center" onClick={() => handleWalletClick(wallet)}>
+    const walletsToDisplay: any = showAllWallets
+      ? walletsAvailable
+      : walletsAvailable.filter((wallet: any) =>
+          ['metamask', 'keepkey', 'ledger'].includes(wallet.type.toLowerCase())
+        );
+    return walletsToDisplay.map((wallet: any) => (
+      <Card key={wallet.type} onClick={() => handleWalletClick(wallet)}>
         <CardBody>
           <Avatar src={wallet.icon}>
             {wallet.isConnected ? (
@@ -181,14 +223,33 @@ const Pioneer = () => {
         minW={100}
       >
         <Avatar size="lg">
-          {isPioneer ? (
-            <Avatar size="lg" src={pioneerImage}>
-              {avatarContent}
-            </Avatar>
+          {isSwitchingWallet ? (
+            <div>
+              <Box position="relative" display="inline-block">
+                <Avatar size="lg" src={pioneerImage} />
+                <CircularProgress
+                  isIndeterminate
+                  size="1.25em"
+                  color="green.500"
+                  position="absolute"
+                  top="50%"
+                  left="50%"
+                  transform="translate(-50%, -50%)"
+                />
+              </Box>
+            </div>
           ) : (
-            <Avatar size="lg" src={pioneerImagePng}>
-              {avatarContent}
-            </Avatar>
+            <div>
+              {isPioneer ? (
+                <Avatar size="lg" src={pioneerImage}>
+                  {avatarContent}
+                </Avatar>
+              ) : (
+                <Avatar size="lg" src={pioneerImagePng}>
+                  {avatarContent}
+                </Avatar>
+              )}
+            </div>
           )}
         </Avatar>
       </MenuButton>
@@ -202,7 +263,9 @@ const Pioneer = () => {
                 </Avatar>
               }
             >
-              <small>{/* <MiddleEllipsis text={context} /> */}</small>
+              <small>
+                <MiddleEllipsis text={context} />
+              </small>
             </Button>
             <IconButton
               icon={<FaCog />}
@@ -234,20 +297,27 @@ const Pioneer = () => {
             >
               <Flex justifyContent="space-between" alignItems="center">
                 <Flex alignItems="center">
-                  <Avatar size="md" src={app?.assetContext?.image} mr={2} />
+                  <Avatar
+                    size="md"
+                    src={
+                      app?.assetContext?.image ||
+                      'https://pioneers.dev/coins/ethereum.png'
+                    }
+                    mr={2}
+                  />
                   <Box fontSize="sm" fontWeight="bold">
                     Asset:
                   </Box>
                 </Flex>
                 <Box fontSize="sm" textAlign="right">
-                  {app?.assetContext?.symbol}
+                  <MiddleEllipsis text={app?.assetContext?.symbol} />
                 </Box>
               </Flex>
               <Flex justifyContent="space-between">
                 <Box fontSize="xs" />
                 <Box fontSize="xs" textAlign="right">
                   caip:
-                  {/* <MiddleEllipsis text={app?.assetContext?.caip} /> */}
+                  <MiddleEllipsis text={app?.assetContext?.caip} />
                 </Box>
               </Flex>
             </Card>
@@ -264,7 +334,10 @@ const Pioneer = () => {
                 <Flex alignItems="center">
                   <Avatar
                     size="md"
-                    src={app?.blockchainContext?.image}
+                    src={
+                      app?.blockchainContext?.image ||
+                      'https://pioneers.dev/coins/ethereum.png'
+                    }
                     mr={2}
                   />
                   <Box fontSize="sm" fontWeight="bold">
@@ -279,7 +352,7 @@ const Pioneer = () => {
                 <Box fontSize="xs" />
                 <Box fontSize="xs" textAlign="right">
                   caip:
-                  {/* <MiddleEllipsis text={app?.blockchainContext?.caip} /> */}
+                  <MiddleEllipsis text={app?.blockchainContext?.caip} />
                 </Box>
               </Flex>
             </Card>
@@ -288,37 +361,18 @@ const Pioneer = () => {
             <Card p={2} borderRadius="md" boxShadow="sm" className="caip">
               <Flex justifyContent="space-between" alignItems="center">
                 <Flex alignItems="center">
-                  {/* <Img */}
-                  {/*    src={[app?.pubkeyContext?.walletImage]} */}
-                  {/*    //@ts-ignore */}
-                  {/*    loader={() => <Avatar size="md" src={app?.pubkeyContext?.walletImage} />} // Fixed: Make sure <Avatar /> returns an Element */}
-                  {/*    //@ts-ignore */}
-                  {/*    unloader={() => <Avatar size="md" src={app?.pubkeyContext?.walletImage} />} // Fixed: Make sure <Avatar /> returns an Element */}
-                  {/*    container={(children) => ( */}
-                  {/*        <div */}
-                  {/*            style={{ */}
-                  {/*              width: "32px", */}
-                  {/*              height: "32px", */}
-                  {/*              borderRadius: "50%", */}
-                  {/*              overflow: "hidden", */}
-                  {/*            }} */}
-                  {/*        > */}
-                  {/*          {children} */}
-                  {/*        </div> */}
-                  {/*    )} */}
-                  {/* /> */}
                   <Box fontSize="sm" fontWeight="bold">
                     Pubkey Path:
                   </Box>
                 </Flex>
                 <Box fontSize="sm" textAlign="right">
-                  {/* <MiddleEllipsis text={app?.pubkeyContext?.path} /> */}
+                  <MiddleEllipsis text={app?.pubkeyContext?.path} />
                 </Box>
               </Flex>
               <Flex justifyContent="space-between">
                 <Box fontSize="xs">Pubkey:</Box>
                 <Box fontSize="xs" textAlign="right">
-                  {/* <MiddleEllipsis text={app?.pubkeyContext?.pubkey} /> */}
+                  <MiddleEllipsis text={app?.pubkeyContext?.pubkey} />
                 </Box>
               </Flex>
             </Card>
@@ -326,8 +380,16 @@ const Pioneer = () => {
         </Box>
 
         <MenuItem>
-          <SimpleGrid columns={3} row={1}>
+          <SimpleGrid columns={3} row={1} maxWidth="280px">
             {renderWallets()}
+            <Text
+              fontSize="sm"
+              cursor="pointer"
+              color="blue.500"
+              onClick={toggleShowAllWallets}
+            >
+              {showAllWallets ? 'Hide Wallets' : 'Show All Wallets'}
+            </Text>
           </SimpleGrid>
         </MenuItem>
       </MenuList>
