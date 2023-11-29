@@ -9,7 +9,6 @@ import {
   IconButton,
   Menu,
   Text,
-  Image,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -25,20 +24,6 @@ import {
   Card,
   CardBody,
 } from '@chakra-ui/react';
-// @ts-ignore
-import pioneerImagePng from '~/lib/assets/png/pioneer.png';
-// @ts-ignore
-import KeepKeyImagePng from '~/lib/assets/png/keepkey.png';
-// @ts-ignore
-import MetaMaskImagePng from '~/lib/assets/png/metamask.png';
-// @ts-ignore
-import KeplerImagePng from '~/lib/assets/png/keplr.png';
-// @ts-ignore
-import XDEFIImagePng from '~/lib/assets/png/XDEFI.png';
-// @ts-ignore
-import LedgerImagePng from '~/lib/assets/png/ledger.png';
-// @ts-ignore
-import wcImagePng from '~/lib/assets/svg/wc.svg';
 
 import KeepKey from '~/lib/components/KeepKey';
 import Ledger from '~/lib/components/Ledger';
@@ -49,45 +34,11 @@ import { FaCog } from 'react-icons/fa';
 import MiddleEllipsis from '~/lib/components/MiddleEllipsis';
 import { usePioneer } from '~/lib/context/Pioneer';
 
-const getWalletBadgeContent = (walletType: string) => {
-  const icons: any = {
-    metamask: MetaMaskImagePng,
-    keepkey: KeepKeyImagePng,
-    native: pioneerImagePng,
-    keplr: KeplerImagePng,
-    xdefi: XDEFIImagePng,
-    ledger: LedgerImagePng,
-    wc: wcImagePng,
-  };
-
-  const icon = icons[walletType];
-
-  return (
-    <AvatarBadge boxSize="1.25em" bg="green.500">
-      <Image rounded="full" src={icon} />
-    </AvatarBadge>
-  );
-};
-
-const getWalletSettingsContent = (walletType: string) => {
-  const icons: any = {
-    metamask: MetaMaskImagePng,
-    keepkey: KeepKeyImagePng,
-    native: pioneerImagePng,
-    keplr: KeplerImagePng,
-    xdefi: XDEFIImagePng,
-    ledger: LedgerImagePng,
-    wc: wcImagePng,
-  };
-
-  const icon = icons[walletType];
-
-  if (!icon) {
-    return <div />;
-  }
-
-  return icon;
-};
+import {
+  getWalletContent,
+  getWalletBadgeContent,
+  pioneerImagePng,
+} from '~/lib/components/WalletIcon';
 
 const Pioneer = () => {
   const { state, connectWallet } = usePioneer();
@@ -109,14 +60,17 @@ const Pioneer = () => {
     setShowAllWallets(!showAllWallets);
   };
 
-  // useEffect(() => {
-  //   if (app.assetContext) {
-  //     console.log(app.assetContext);
-  //   }
-  // }, [app, app?.assetContext]);
+  useEffect(() => {
+    if (context) {
+      console.log('context: ', context);
+      setWalletType(context.split(':')[0]);
+    }
+  }, [context, app]);
 
   useEffect(() => {
     if (context && app.isPioneer) {
+      console.log('context: ', context);
+      setWalletType(context.split(':')[0]);
       setPioneerImage(app.isPioneer);
     }
   }, [context, app, app?.isPioneer]);
@@ -310,13 +264,7 @@ const Pioneer = () => {
         <MenuList>
           <Box borderBottomWidth="1px" p="4">
             <HStack justifyContent="space-between">
-              <Button
-                leftIcon={
-                  <Avatar size="xs" src={getWalletSettingsContent(walletType)}>
-                    <AvatarBadge boxSize="0.75em" bg="green.500" />
-                  </Avatar>
-                }
-              >
+              <Button leftIcon={getWalletContent(walletType)}>
                 <small>
                   <MiddleEllipsis text={context} />
                 </small>

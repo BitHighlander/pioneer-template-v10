@@ -121,7 +121,8 @@ export class SDK {
   // public broadcast: (tx:any) => Promise<any>;
   private setContext: (context: string) => Promise<{ success: boolean }>;
 
-  private refresh: (context: string) => Promise<any>;
+  // @ts-ignore
+  public refresh: (context: string) => Promise<any>;
 
   // private setPubkeyContext: (pubkeyObj:any) => Promise<boolean>;
   // @ts-ignore
@@ -310,7 +311,7 @@ export class SDK {
           this.wallets[matchingWalletIndex].connected = true;
           this.wallets[matchingWalletIndex].status = 'connected';
           this.setContext(context);
-          this.refresh(context);
+          // this.refresh(context);
         } else {
           throw Error(`Failed to pair wallet! ${walletSelected.type}`);
         }
@@ -324,6 +325,7 @@ export class SDK {
         throw e;
       }
     };
+    // @ts-ignore
     // eslint-disable-next-line sonarjs/cognitive-complexity
     this.refresh = async function (context: string) {
       const tag = `${TAG} | refresh | `;
