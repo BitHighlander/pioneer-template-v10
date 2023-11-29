@@ -12,6 +12,7 @@ import {
   FormControl,
   FormLabel,
   useToast,
+  Spinner,
   Avatar,
 } from '@chakra-ui/react';
 
@@ -20,20 +21,25 @@ import { COIN_MAP_LONG } from '@pioneer-platform/pioneer-coins';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 // import { Chain } from '@pioneer-platform/types';
-import { useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 import { usePioneer } from '~/lib/context/Pioneer';
 
 const Transfer = ({ openModal }: any) => {
   const toast = useToast();
-  const { state } = usePioneer();
-  const { app, assetContext, balances } = state;
-
+  const { state, connectWallet } = usePioneer();
+  const { app, assetContext, balances, context } = state;
+  const [isPairing, setIsPairing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   // const [modalType, setModalType] = useState("");
   const [inputAmount, setInputAmount] = useState('');
   const [sendAmount, setSendAmount] = useState<any | undefined>();
   const [recipient, setRecipient] = useState('');
+
+  // start the context provider
+  useEffect(() => {
+    setIsPairing(false);
+  }, [app, app?.context]);
 
   const handleInputChange = (value: string) => {
     setInputAmount(value);
@@ -48,32 +54,46 @@ const Transfer = ({ openModal }: any) => {
   };
 
   const handleSend = useCallback(async () => {
-    if (!assetContext || !inputAmount || !app || !app.swapKit || !sendAmount)
-      return;
-    setIsSubmitting(true);
-    // const assetAmount = new AssetAmount(assetContext.asset, sendAmount);
-
-    if (!recipient) {
-      toast({
-        title: 'Error',
-        description: 'Must select a recipient',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-
     try {
-      // const txHash = await app.swapKit.transfer({
-      //   assetAmount,
-      //   memo: '',
-      //   recipient,
-      // });
-      // window.open(
-      //   `${app.swapKit.getExplorerTxUrl(Chain.THORChain, txHash as string)}`,
-      //   '_blank'
-      // );
+      if (!inputAmount) alert('You MUST input an amount to send!');
+      if (!recipient) alert('You MUST input a recipient to send to!');
+
+      setIsSubmitting(true);
+      // @TODO Validate Address!
+      // verify is connected
+      const isContextExist = app.wallets.some(
+        (wallet: any) => wallet.context === context
+      );
+      if (!isContextExist) {
+        setIsPairing(true);
+        const contextType = context.split(':')[0];
+        console.log('contextType: ', contextType);
+        // connect it
+        connectWallet(contextType.toUpperCase());
+      } else {
+        /*
+            assetValue: AssetValue;
+            recipient: string;
+            memo?: string;
+            feeOptionKey?: FeeOption;
+            feeRate?: number;
+            data?: string;
+            from?: string;
+            expiration?: number;
+         */
+        const txHash = await app.swapKit.transfer({
+          assetContext,
+          memo: '',
+          recipient,
+        });
+        window.open(
+          `${app.swapKit.getExplorerTxUrl(
+            assetContext.chain,
+            txHash as string
+          )}`,
+          '_blank'
+        );
+      }
     } catch (e: any) {
       console.error(e);
       toast({
@@ -91,43 +111,55 @@ const Transfer = ({ openModal }: any) => {
       <Heading as="h1" size="lg">
         Send Crypto!
       </Heading>
-      <Avatar
-        size="xl"
-        src={`https://pioneers.dev/coins/${
-          COIN_MAP_LONG[assetContext?.asset?.network]
-        }.png`}
-      />
-      <Text>Asset: {assetContext?.asset?.name || 'N/A'}</Text>
-      <Text>Chain: {assetContext?.asset?.chain || 'N/A'}</Text>
-      <Text>Symbol: {assetContext?.asset?.symbol || 'N/A'}</Text>
-      <Button onClick={() => openModal('Select Asset')} isDisabled={!balances}>
-        Select Asset
-      </Button>
-      <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-        <FormControl>
-          <FormLabel>Recipient:</FormLabel>
-          <Input
-            onChange={(e) => setRecipient(e.target.value)}
-            placeholder="Address"
-            value={recipient}
+      {isPairing ? (
+        <Text>
+          Connecting to {context}...
+          <Spinner size="xl" />
+          Please check your wallet to approve the connection.
+        </Text>
+      ) : (
+        <div>
+          <Avatar
+            size="xl"
+            src={`https://pioneers.dev/coins/${
+              COIN_MAP_LONG[assetContext?.chain]
+            }.png`}
           />
-        </FormControl>
-        <FormControl>
-          <FormLabel>Input Amount:</FormLabel>
-          <Input
-            onChange={(e) => handleInputChange(e.target.value)}
-            placeholder="0.0"
-            value={inputAmount}
-          />
-        </FormControl>
-      </Grid>
-      <Text>
-        Available Balance: {assetContext?.assetAmount?.toString() || 'N/A'} (
-        {assetContext?.asset?.symbol || 'N/A'})
-      </Text>
-      <Button mt={4} isLoading={isSubmitting} onClick={handleSend} w="full">
-        {/* {isSubmitting ? <Spinner size="xs" /> : 'Send'} */}
-      </Button>
+          <Text>Asset: {assetContext?.name || 'N/A'}</Text>
+          <Text>Chain: {assetContext?.chain || 'N/A'}</Text>
+          <Text>Symbol: {assetContext?.symbol || 'N/A'}</Text>
+          <Button
+            onClick={() => openModal('Select Asset')}
+            isDisabled={!balances}
+          >
+            Change Asset
+          </Button>
+          <Grid templateColumns="repeat(2, 1fr)" gap={6}>
+            <FormControl>
+              <FormLabel>Recipient:</FormLabel>
+              <Input
+                onChange={(e) => setRecipient(e.target.value)}
+                placeholder="Address"
+                value={recipient}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Input Amount:</FormLabel>
+              <Input
+                onChange={(e) => handleInputChange(e.target.value)}
+                placeholder="0.0"
+                value={inputAmount}
+              />
+            </FormControl>
+          </Grid>
+          <Text>
+            Available Balance: {assetContext?.balance} ({assetContext?.symbol})
+          </Text>
+          <Button mt={4} isLoading={isSubmitting} onClick={handleSend} w="full">
+            {isSubmitting ? <Spinner size="xs" /> : 'Send'}
+          </Button>
+        </div>
+      )}
     </VStack>
   );
 };

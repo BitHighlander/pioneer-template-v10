@@ -28,7 +28,6 @@ import { usePioneer } from '~/lib/context/Pioneer';
 // import OutputSelect from "lib/components/OutputSelect";
 // import BlockchainSelect from "lib/components/BlockchainSelect";
 // import WalletSelect from "lib/components/WalletSelect";
-import Balances from '~/lib/components/Balances';
 import Basic from '~/lib/components/Basic';
 // // import Pubkeys from "./components/Pubkeys";
 import Transfer from '~/lib/components/Transfer';
@@ -42,7 +41,6 @@ const Home = () => {
     // context,
     // assetContext,
     // blockchainContext,
-    balances,
     pubkeyContext,
     // modals,
   } = state;
@@ -71,16 +69,6 @@ const Home = () => {
   const openModal = (type: any) => {
     setModalType(type);
     onOpen();
-  };
-
-  const refresh = async () => {
-    console.log('2 pubkeyContext: ', pubkeyContext);
-    console.log('2 balances: ', balances);
-    if (pubkeyContext)
-      setAddress(
-        pubkeyContext?.master || pubkeyContext?.pubkey || pubkeyContext
-      );
-    // console.log("pubkeyContext: ", pubkeyContext);
   };
 
   return (
@@ -141,7 +129,7 @@ const Home = () => {
             <Basic />
           </TabPanel>
           <TabPanel>
-            <Balances />
+            <AssetSelect />
           </TabPanel>
           <TabPanel>
             <Transfer openModal={openModal} />
@@ -155,7 +143,6 @@ const Home = () => {
           </TabPanel>
         </TabPanels>
       </Tabs>
-      <Button onClick={refresh}>refresh</Button>
     </div>
   );
 };

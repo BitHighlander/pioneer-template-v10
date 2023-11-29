@@ -1,33 +1,45 @@
-/*
-  Basic information about the current context and user
- */
+import { useState, useEffect } from 'react';
 import {
   Table,
   TableContainer,
   Tbody,
   Td,
-  Tfoot,
   Th,
   Thead,
   Tr,
+  Button,
 } from '@chakra-ui/react';
-
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { useState, useEffect } from 'react';
 
 import { usePioneer } from '~/lib/context/Pioneer';
 
 const Basic = () => {
   const { state } = usePioneer();
-  const { context, assetContext, blockchainContext, pubkeyContext } = state;
-  const [address, setAddress] = useState('');
+  const { context, assetContext } = state;
+
+  const [copyButtonText, setCopyButtonText] = useState('Copy');
+
+  // Variable to store the timeout ID
+  let timeoutId: any = null;
+
+  const copyToClipboard = (text: any) => {
+    navigator.clipboard.writeText(text);
+    setCopyButtonText('Copied to Clipboard');
+
+    // Clear any existing timeout to avoid multiple timeouts running
+    if (timeoutId) clearTimeout(timeoutId);
+
+    // Set a new timeout
+    timeoutId = setTimeout(() => {
+      setCopyButtonText('Copy');
+    }, 2000);
+  };
 
   useEffect(() => {
-    if (pubkeyContext)
-      setAddress(
-        pubkeyContext?.master || pubkeyContext?.pubkey || pubkeyContext
-      );
-  }, [pubkeyContext]);
+    // Cleanup function to clear the timeout when the component unmounts
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, []);
 
   return (
     <div>
@@ -37,36 +49,33 @@ const Basic = () => {
             <Tr>
               <Th>Context</Th>
               <Th>Value</Th>
+              <Th>Action</Th>
             </Tr>
           </Thead>
           <Tbody>
             <Tr>
               <Td>Wallet Context</Td>
               <Td>{context}</Td>
+              <Td />
             </Tr>
             <Tr>
               <Td>Asset Context</Td>
-              <Td>{assetContext?.asset?.name}</Td>
-            </Tr>
-            <Tr>
-              <Td>Blockchain Context</Td>
-              <Td>{blockchainContext?.name}</Td>
+              <Td>{assetContext?.name}</Td>
+              <Td />
             </Tr>
             <Tr>
               <Td>Address for context</Td>
-              <Td>{address}</Td>
-            </Tr>
-            <Tr>
-              <Td>Outbound asset context</Td>
-              <Td>{address}</Td>
+              <Td>{assetContext.address}</Td>
+              <Td>
+                <Button
+                  size="sm"
+                  onClick={() => copyToClipboard(assetContext.address)}
+                >
+                  {copyButtonText}
+                </Button>
+              </Td>
             </Tr>
           </Tbody>
-          <Tfoot>
-            <Tr>
-              <Th>Context</Th>
-              <Th>Value</Th>
-            </Tr>
-          </Tfoot>
         </Table>
       </TableContainer>
     </div>

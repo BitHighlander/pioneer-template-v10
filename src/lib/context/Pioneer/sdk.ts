@@ -477,20 +477,9 @@ export class SDK {
     this.setContext = async function (context: string) {
       const tag = `${TAG} | setContext | `;
       try {
-        // log.info(tag, "context: ", context);
-        const isContextExist = this.wallets.some(
-          (wallet: any) => wallet.context === context
-        );
-        // log.info(tag, "isContextExist: ", isContextExist);
-        if (isContextExist) {
-          // if success
-          this.context = context;
-          this.events.emit('SET_CONTEXT', context);
-          return { success: true };
-        }
-        throw Error(
-          `Wallet context not found paired! con not set context to unpaired wallet!${context}`
-        );
+        this.context = context;
+        this.events.emit('SET_CONTEXT', context);
+        return { success: true };
       } catch (e) {
         console.error(tag, e);
         throw e;
